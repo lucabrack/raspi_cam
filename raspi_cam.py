@@ -68,13 +68,14 @@ def open_camera(camera_config, video=False, fixed=args.fixed_parameter):
 
     if fixed:
         camera.iso = int(camera_config['iso'])
-        sleep(2)
+        sleep(2) # Wait for the automatic gain control to settle
         camera.shutter_speed = int(camera_config['shutter_speed'])
         camera.exposure_mode = 'off'
         camera.awb_mode = 'off'
         camera.awb_gains = camera_config['awb_gains']
-    
-    sleep(0.1)
+        sleep(0.1)
+    else:
+        sleep(2) # Wait for the automatic gain control to settle
     
     return camera
 
@@ -126,14 +127,16 @@ def delay_program(delay, intervall=3):
 if args.preview_video:
     camera_config = init_camera()
 
-    # If time is given start a Timer
-    start_time = 0
-    if args.time > 0:
-        start_time = time.time()
+  
 
     print("Starting Preview")
     with open_camera(camera_config, video=True) as camera:
         rawCapture = PiRGBArray(camera)
+        
+        # If time is given start a Timer
+        start_time = 0
+        if args.time > 0:
+            start_time = time.time()
         
         for frame in camera.capture_continuous(rawCapture, format='bgr', use_video_port=True):
             image = frame.array
@@ -142,14 +145,17 @@ if args.preview_video:
                         resize_image_for_preview(image, camera_config))
             key = cv2.waitKey(1) & 0xFF
             
-            rawCapture.truncate(0)
+            rawCapture.truncate(0) #empty output for next Image
             
+            # Break if 'q' key is pressed
             if key == ord('q'):
                 break
             
+            # Break if time run out 
             if args.time > 0:
-                if time.time() - start_time > args.time + 2.0:
+                if time.time() - start_time > args.time:
                     break
+        
         
 if args.preview_still:
     camera_config = init_camera()
@@ -189,7 +195,6 @@ if args.time_lapse is not None:
                 break
         
         time.sleep(args.time_lapse)
-    
 
 
 if args.output:
@@ -198,6 +203,7 @@ if args.output:
             image = capture_image(camera)
 
     save_image(image)
+
 
 print('Terminating Program')
 cv2.destroyAllWindows()

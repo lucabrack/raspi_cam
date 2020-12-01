@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+# Ignore images folder
+images/
+
+>>>>>>> master
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -114,6 +120,12 @@ venv.bak/
 .spyderproject
 .spyproject
 
+<<<<<<< HEAD
+=======
+# VSCode project settings
+.vscode
+
+>>>>>>> master
 # Rope project settings
 .ropeproject
 
@@ -126,4 +138,8 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
+<<<<<<< HEAD
 .pyre/
+=======
+.pyre/
+>>>>>>> master
